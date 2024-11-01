@@ -47,4 +47,31 @@ readonly class Client
 
         return $params;
     }
+
+    /**
+     * @param string|null $type
+     * @param int $skip
+     * @param int $take
+     * @param string $orderBy
+     * @param string $orderDirection
+     * @return array
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
+    public function getTransactions(?string $type = null, ?int $skip = null, ?int $take = null, ?string $orderBy = null, ?string $orderDirection = null): array
+    {
+        $response = $this->httpClient->request('GET', 'transactions/{?skip,take,lastModified,transactionNumber,accountId,id,type,minAmount,maxAmount,orderBy,orderDirection}', [
+            'vars' => array_filter([
+                'skip' => $skip,
+                'take' => $take,
+                'orderBy' => $orderBy,
+                'orderDirection' => $orderDirection,
+                'type' => $type,
+            ], fn ($value) => $value !== null),
+        ]);
+        return $response->toArray();
+    }
 }
